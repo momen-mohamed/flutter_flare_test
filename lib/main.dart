@@ -28,21 +28,32 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
   var paused = true;
 
   void click() {
+    paused ? controller.forward() : controller.reverse();
+
     setState(() {
       paused = !paused;
     });
   }
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  AnimationController controller;
+
+  @override
+  void initState() {
+    controller =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 200));
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -67,7 +78,10 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: click,
         tooltip: 'Increment',
-        child: paused ? Icon(Icons.play_arrow) : Icon(Icons.pause),
+        child: AnimatedIcon(
+          icon: AnimatedIcons.play_pause,
+          progress: controller,
+        ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
